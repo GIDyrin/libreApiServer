@@ -80,14 +80,14 @@ REST_FRAMEWORK = {
     ],
     
     'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
+        #'rest_framework.permissions.AllowAny',
     ],
     
      'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
     ]
 }
 
@@ -152,3 +152,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#5546b3f4bb9ecacc4a1ebcc425c87e89b3655f34

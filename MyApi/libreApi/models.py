@@ -113,3 +113,6 @@ class Bookmarks(models.Model):
   class Meta:
       db_table = 'bookmarks'
       managed = False
+      
+      
+#class AuthUsers(models.Model):

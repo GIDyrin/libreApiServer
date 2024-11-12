@@ -27,7 +27,7 @@ router.register(r'author', AuthorView)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('rest_framework.urls')),
-    #path('api/v1/auth', include('djoser.urls')),
+    path('api/v1/auth', include('djoser.urls')),
     path('', include(router.urls)),
-    #re_path(r'^auth/', include('djoser.urls.authtoken')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
 ]
