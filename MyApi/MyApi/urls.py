@@ -16,11 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
+from rest_framework.routers import DefaultRouter
+from libreApi.views import AuthorView
+
+router = DefaultRouter()
+router.register(r'author', AuthorView)
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('rest_framework.urls')),
-    path('api/v1/auth', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    #path('api/v1/auth', include('djoser.urls')),
+    path('', include(router.urls)),
+    #re_path(r'^auth/', include('djoser.urls.authtoken')),
 ]
