@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'libreApi.CustomUser'
+
 
 # Application definition
 
@@ -80,8 +82,8 @@ REST_FRAMEWORK = {
     ],
     
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        #'rest_framework.permissions.AllowAny',
+        #'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     
      'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -109,7 +111,6 @@ DATABASES = {
         'PORT': '5432'
     }
 }
-
 
 
 # Password validation

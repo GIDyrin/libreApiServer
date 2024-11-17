@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
-from libreApi.views import AuthorView
+from libreApi.views import AuthorView, Registration
 
 router = DefaultRouter()
 router.register(r'author', AuthorView)
@@ -26,8 +26,12 @@ router.register(r'author', AuthorView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('rest_framework.urls')),
+    path('api/v1/', include('rest_framework.urls')),
     path('api/v1/auth', include('djoser.urls')),
-    path('', include(router.urls)),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    path('api/v1/', include(router.urls)),
+    re_path(r'^api/v1/auth/', include('djoser.urls.authtoken')),
+    path('api/v1/registration', Registration.as_view())
 ]
+
+
+#POST api/v1/auth/token/login (username:,password:, or)

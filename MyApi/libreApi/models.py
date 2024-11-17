@@ -1,28 +1,16 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)  # Используем AutoField для автоинкремента
-    email = models.EmailField(unique=True, max_length=255)  # Поле для хранения уникального email
-    password_hash = models.CharField(max_length=256)  # Поле для хранения хэшированного пароля
-    username = models.CharField(unique=True, max_length=30)  # Поле для уникального имени пользователя
-    about_user = models.CharField(max_length=1024, blank=True, null=True)  # Поле для информации о пользователе
-    profile_photo_path = models.CharField(max_length=256, blank=True, null=True)  # Путь к профилю фотографии
-    registration_time = models.DateTimeField(default=timezone.now)  # Время регистрации пользователя
-
-    class Meta:
-      managed = False
-      db_table = 'users'
-      
-    def __str__(self):
-        return self.username  # Возвращаем имя пользователя для удобства
-      
+class CustomUser(AbstractUser): 
+  about_user = models.TextField(blank=True, null=True)  # Поле для информации о пользователе
+  profile_photo_path = models.CharField(max_length=256, blank=True, null=True) 
 
 class Author(models.Model):
     author_id = models.AutoField(primary_key=True)  # serial, auto-incrementing primary key
     author_name = models.TextField(null=False)  # текст, не может быть NULL
     biography = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='authors')  # Связь с пользователем
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authors')  # Связь с пользователем
     image_path = models.CharField(max_length=256, blank=True, null=True)  
 
     class Meta:
@@ -90,7 +78,7 @@ class BookGenres(models.Model):
       
 class Reviews(models.Model):
   review_id = models.AutoField(primary_key=True)
-  user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+  user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
   book = models.ForeignKey(Books, on_delete=models.CASCADE, null=False)
   review_text = models.CharField(max_length=2000, null=False)
   review_rate = models.IntegerField(null=False)
@@ -106,7 +94,7 @@ class Reviews(models.Model):
       
 class Bookmarks(models.Model):
   bookmark_id = models.AutoField(primary_key=True)
-  user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+  user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=False)
   book = models.ForeignKey(Books, on_delete=models.CASCADE, null=False)
   page_number = models.IntegerField(null=False)
   
