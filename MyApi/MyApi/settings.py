@@ -25,6 +25,7 @@ SECRET_KEY = 'django-insecure-off9f3f(m=9j_*r0u&ydt7gp$hl9xe3k7a^a2!mti)5kdql(6d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'libreApi.CustomUser'
@@ -82,15 +83,18 @@ REST_FRAMEWORK = {
     ],
     
     'DEFAULT_PERMISSION_CLASSES': [
-        #'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
+        #'rest_framework.permissions.AllowAny',
     ],
     
-     'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         #'rest_framework.authentication.BasicAuthentication',
         #'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
+     
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50,  
 }
 
 WSGI_APPLICATION = 'MyApi.wsgi.application'

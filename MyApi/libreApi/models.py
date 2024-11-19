@@ -10,7 +10,7 @@ class Author(models.Model):
     author_id = models.AutoField(primary_key=True)  # serial, auto-incrementing primary key
     author_name = models.TextField(null=False)  # текст, не может быть NULL
     biography = models.TextField(blank=True, null=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='authors')  # Связь с пользователем
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Связь с пользователем
     image_path = models.CharField(max_length=256, blank=True, null=True)  
 
     class Meta:
