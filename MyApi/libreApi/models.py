@@ -90,6 +90,7 @@ class Reviews(models.Model):
   class Meta:
       db_table = 'reviews'
       managed = False
+      unique_together = ('user', 'book')
       
       
 class Bookmarks(models.Model):

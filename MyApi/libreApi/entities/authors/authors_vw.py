@@ -8,7 +8,7 @@ import os
 from rest_framework.permissions import IsAuthenticated
 
 
-class RegUserAsAuthor(generics.CreateAPIView):
+class RegUserAsAuthorView(generics.CreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorsSerializer
     permission_classes = [IsAuthenticated]
@@ -48,7 +48,7 @@ class RegUserAsAuthor(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
       
       
-class UpdateDeleteMe(generics.GenericAPIView):
+class UpdateDeleteMeView(generics.GenericAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorsSerializer
 
@@ -97,7 +97,7 @@ class UpdateDeleteMe(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)  # Возвращаем статус 204 No Content
       
 
-class AuthorPortrait(generics.GenericAPIView):
+class AuthorPortraitView(generics.GenericAPIView):
     def get(self, request, author_id):
         author = Author.objects.get(author_id=author_id)
         if author.image_path:
@@ -125,7 +125,7 @@ class AuthorPortrait(generics.GenericAPIView):
            return Response({"detail": "Изображение не найдено."}, status=status.HTTP_404_NOT_FOUND)
          
          
-class GetAuthors(views.APIView):
+class GetAuthorsView(views.APIView):
 
     def get(self, request, author_id=None):
         # Если передан author_id, пытаемся получить конкретного автора

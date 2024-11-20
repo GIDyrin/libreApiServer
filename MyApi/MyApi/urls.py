@@ -33,28 +33,39 @@ urlpatterns = [
     path('api/v1/auth', include('djoser.urls')),
     path('api/v1/', include(router.urls)),
     re_path(r'^api/v1/auth/', include('djoser.urls.authtoken')),
-    path('api/v1/registration', Registration.as_view()),
+    path('api/v1/registration', RegistrationView.as_view()),
     
     #USER GETINFO/PHOTO, UPDATE INFO/PHOTO, DELETE USER/PHOTO
-    path('api/v1/user/update/<int:pk>', UpdateInfo.as_view()),
-    path('api/v1/user/<int:pk>', GetUser.as_view()),
-    path('api/v1/user/<int:user_id>/photo/', GetUserPhoto.as_view()),
-    path('api/v1/users/<int:pk>/', DeleteUser.as_view(), name='delete-user'), 
+    path('api/v1/user/update/<int:pk>', UpdateInfoView.as_view()),
+    path('api/v1/user/<int:pk>', GetUserView.as_view()),
+    path('api/v1/user/<int:user_id>/photo/', GetUserPhotoView.as_view()),
+    path('api/v1/users/<int:pk>/', DeleteUserView.as_view(), name='delete-user'), 
     
     #AUTHORS: POST UserRegistrateASAuthor, 
-    path('api/v1/authors/new/', RegUserAsAuthor.as_view()),
-    path('api/v1/authors/me/', UpdateDeleteMe.as_view()),
-    path('api/v1/authors/<int:author_id>/portrait/', AuthorPortrait.as_view()),
-    path('api/v1/authors/', GetAuthors.as_view(),),  
-    path('api/v1/authors/<int:author_id>/', GetAuthors.as_view()), 
+    path('api/v1/authors/new/', RegUserAsAuthorView.as_view()),
+    path('api/v1/authors/me/', UpdateDeleteMeView.as_view()),
+    path('api/v1/authors/<int:author_id>/portrait/', AuthorPortraitView.as_view()),
+    path('api/v1/authors/', GetAuthorsView.as_view(),),  
+    path('api/v1/authors/<int:author_id>/', GetAuthorsView.as_view()), 
     
     #BOOKS
-    path('api/v1/books/download/<int:pk>/', GetBookFile.as_view()),
-    path('api/v1/books/<int:pk>/', GetBookInfo.as_view()),
-    path('api/v1/books/new', PostBook.as_view()),
-    path('api/v1/books/me/<int:pk>/', DeleteMyBook.as_view()),
-    path('api/v1/books/byauthor/<int:author_id>/', GetBooksByAuthor.as_view()),
-    path('api/v1/books/', GetBooksByGenres.as_view())
+    path('api/v1/books/download/<int:pk>/', GetBookFileView.as_view()),
+    path('api/v1/books/<int:pk>/', GetBookInfoView.as_view()),
+    path('api/v1/books/new', PostBookView.as_view()),
+    path('api/v1/books/me/<int:pk>/', DeleteMyBookView.as_view()),
+    path('api/v1/books/byauthor/<int:author_id>/', GetBooksByAuthorView.as_view()),
+    path('api/v1/books/', GetBooksByGenresView.as_view()),
+    
+    
+    #BOOKMARKS
+    path('api/v1/bookmarks/me/<int:pk>/', BookmarkRUDView.as_view()),
+    path('api/v1/bookmarks/me/', UsersBookmarksView.as_view()),
+    path('api/v1/bookmarks/me/new/', CreateBookmarkView.as_view()),
+    
+    #REVIEWS
+    path('api/v1/reviews/new/', PostReviewView.as_view()),
+    path('api/v1/reviews/delete/<int:pk>/', DeleteReviewView.as_view()),
+    path('api/v1/reviews/user/<int:user_id>/', UserReviewsView.as_view()),
 ]
 
 

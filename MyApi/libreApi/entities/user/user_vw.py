@@ -13,7 +13,7 @@ class AuthorView(viewsets.ModelViewSet):
     serializer_class = AuthorsSerializer
 
 
-class Registration(views.APIView):
+class RegistrationView(views.APIView):
     permission_classes = [AllowAny]
     def post(self, request):
         serializer = DefaultUserSerializer(data=request.data)  # Десериализуем входящие данные
@@ -23,7 +23,7 @@ class Registration(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Ошибка валидации
     
     
-class UpdateInfo(generics.UpdateAPIView):
+class UpdateInfoView(generics.UpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UpdatePersonalInfoSerializer
 
@@ -69,7 +69,7 @@ class UpdateInfo(generics.UpdateAPIView):
             return Response({"detail": "Неподдерживаемый формат файла."}, status=status.HTTP_400_BAD_REQUEST)
         
         
-class GetUser(generics.RetrieveAPIView):
+class GetUserView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = GetUserInfoSerializer
     
@@ -90,7 +90,7 @@ class GetUser(generics.RetrieveAPIView):
         return Response(user_data, status=status.HTTP_200_OK)
 
 
-class GetUserPhoto(generics.GenericAPIView):
+class GetUserPhotoView(generics.GenericAPIView):
     def get(self, request, user_id):
         user = CustomUser.objects.get(id=user_id)
         if user.profile_photo_path:
@@ -118,7 +118,7 @@ class GetUserPhoto(generics.GenericAPIView):
             return Response({"detail": "Изображение не найдено."}, status=status.HTTP_404_NOT_FOUND)
         
         
-class DeleteUser(generics.DestroyAPIView):
+class DeleteUserView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = ToDeleteUser
 

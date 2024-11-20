@@ -22,7 +22,7 @@ class BooksPagination(PageNumberPagination):
     max_page_size = 100  # Максимально допустимое количество элементов на странице
 
 
-class GetBookFile(generics.RetrieveAPIView):
+class GetBookFileView(generics.RetrieveAPIView):
     queryset = Books.objects.all() 
     serializer_class = BookSerializer  
 
@@ -34,7 +34,7 @@ class GetBookFile(generics.RetrieveAPIView):
         else:
             return Response({"detail": "Изображение не найдено."}, status=status.HTTP_404_NOT_FOUND)
           
-class GetBookInfo(generics.RetrieveAPIView):
+class GetBookInfoView(generics.RetrieveAPIView):
     queryset = Books.objects.all()
 
 
@@ -55,7 +55,7 @@ class GetBookInfo(generics.RetrieveAPIView):
         return Response(response_data)
 
 
-class PostBook(generics.CreateAPIView):
+class PostBookView(generics.CreateAPIView):
     queryset = Books.objects.all()
     serializer_class = BookCreateSerializer
 
@@ -68,7 +68,7 @@ class PostBook(generics.CreateAPIView):
     
     
     
-class DeleteMyBook(generics.DestroyAPIView):
+class DeleteMyBookView(generics.DestroyAPIView):
     queryset = Books.objects.all()
     serializer_class = BookSerializer
     
@@ -84,14 +84,14 @@ class DeleteMyBook(generics.DestroyAPIView):
             return Response({"details": "YOU CANNOT DELETE OTHER AUTHOR'S BOOK"}, status=status.HTTP_403_FORBIDDEN)
         
         
-class GetBooksByAuthor(views.APIView):
+class GetBooksByAuthorView(views.APIView):
     def get(self, request, author_id):
         filtered_books = Books.objects.filter(author=author_id)
        
         return Response(BookSerializer(filtered_books ,many = True).data, status=status.HTTP_200_OK)
     
     
-class GetBooksByGenres(views.APIView):
+class GetBooksByGenresView(views.APIView):
     pagination_class = BooksPagination
     
     def get(self, request):
