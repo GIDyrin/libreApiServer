@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from django.core.files.storage import default_storage
 import os
 from rest_framework.permissions import IsAuthenticated
+from django.http import Http404
+
 
 
 class RegUserAsAuthorView(generics.CreateAPIView):
@@ -48,22 +50,33 @@ class RegUserAsAuthorView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
       
       
-class UpdateDeleteMeView(generics.GenericAPIView):
+
+class GetUpdateDeleteMeView(generics.GenericAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorsSerializer
 
     def get_object(self):
-        # Предполагается, что автор связан с пользователем через пользователя
-        user = self.request.user
-        return Author.objects.get(user=user)  # Получаем объект автора по входящему пользователю
+        user_id = self.request.user.id
+        try:
+            return Author.objects.get(user=user_id)
+        except Author.DoesNotExist:
+            raise Http404("Author not found for the current user.")
+
+    def get(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Http404 as e:
+            return Response({"error": "Author not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
-        instance = self.get_object()  # Получаем текущего автора
-        serializer = self.get_serializer(instance, data=request.data, partial=True)  # Инициализируем сериализатор
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
             # Проверка на наличие нового изображения в запросе
-            new_profile_photo = request.FILES.get('image_path', None)
+            new_profile_photo = request.FILES.get('image', None)
 
             if new_profile_photo:
                 file_type = new_profile_photo.content_type
@@ -71,13 +84,12 @@ class UpdateDeleteMeView(generics.GenericAPIView):
                     'image/jpeg': 'jpg',
                     'image/png': 'png',
                     'image/webp': 'webp',
-                }    
+                }
 
                 if file_type in allowed_formats:
-                    # Определяем путь сохранения нового изображения
                     file_path = default_storage.save(f'profile_photos/{instance.user.username}-prphoto.{allowed_formats[file_type]}', new_profile_photo)
-                    old_profile_photo_path = instance.image_path  # Сохраняем старый путь для последующего удаления
-                    instance.image_path = file_path  # Обновляем путь к изображению
+                    old_profile_photo_path = instance.image_path
+                    instance.image_path = file_path
 
                     # Удаляем старую фотографию, если она существует
                     if old_profile_photo_path:
@@ -88,13 +100,16 @@ class UpdateDeleteMeView(generics.GenericAPIView):
 
             self.perform_update(serializer)  # Сохраняем изменения
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def perform_update(self, serializer):
+        serializer.save()
+
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()  # Получаем текущего автора
-        instance.delete()  # Удаляем экземпляр автора
-        return Response(status=status.HTTP_204_NO_CONTENT)  # Возвращаем статус 204 No Content
+        instance = self.get_object()
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
       
 
 class AuthorPortraitView(generics.GenericAPIView):

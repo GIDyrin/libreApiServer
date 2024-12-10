@@ -8,24 +8,20 @@ from rest_framework.response import Response
 
 class PostReviewView(generics.CreateAPIView):
     queryset = Reviews.objects.all()
-    serializer_class = ReviewsSerializer
+    serializer_class = ReviewPostSerializer
 
     def perform_create(self, serializer):
         try:
             # Сохраняем отзыв с пользователем из запроса
             review = serializer.save(user=self.request.user)
         except IntegrityError:
-            # Если произошла ошибка уникальности (например, отзыв уже существует для пользователя и книги)
+            # Если произошла ошибка уникальности, бросаем ValidationError
             raise ValidationError({'detail': 'Отзыв для этой книги уже существует от данного пользователя.'})
-        
+
         book = review.book
         
         # Попробуем получить существующую запись BooksRating для книги
-        try:
-            books_rating = BooksRating.objects.get(book=book)
-        except BooksRating.DoesNotExist:
-            # Если записи нет, создаем новую
-            books_rating = BooksRating(book=book, reviews_count=0, avg_rate=0.0)
+        books_rating, created = BooksRating.objects.get_or_create(book=book, defaults={'reviews_count': 0, 'avg_rate': 0.0})
         
         books_rating.reviews_count += 1
         
@@ -34,6 +30,15 @@ class PostReviewView(generics.CreateAPIView):
         books_rating.avg_rate = total_rating / books_rating.reviews_count
         
         books_rating.save()
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
         
         
 class DeleteReviewView(generics.DestroyAPIView):
@@ -49,9 +54,16 @@ class DeleteReviewView(generics.DestroyAPIView):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
       
-      
-class UserReviewsView(generics.ListAPIView):
+class BookReviewsView(generics.ListAPIView):
     serializer_class = ReviewsSerializer
+    
+    def get_queryset(self):
+        bookId = self.kwargs['pk']
+        return  Reviews.objects.filter(book=bookId)
+    
+    
+class UserReviewsView(generics.ListAPIView):
+    serializer_class = ReviewsAndBookSerializer
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']

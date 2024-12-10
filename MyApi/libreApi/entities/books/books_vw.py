@@ -77,19 +77,34 @@ class DeleteMyBookView(generics.DestroyAPIView):
         
         check = Author.objects.get(user=request.user.id)
         if check == book.author:
-            os.remove(book.book_path)
-            book.delete()
+            try:
+                os.remove(book.book_path)
+            except:
+                print("FILE DOESN'T EXIST")
+            finally:
+                book.delete()
+            
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"details": "YOU CANNOT DELETE OTHER AUTHOR'S BOOK"}, status=status.HTTP_403_FORBIDDEN)
         
         
 class GetBooksByAuthorView(views.APIView):
+    pagination_class = BooksPagination  # Устанавливаем класс пагинации
+
     def get(self, request, author_id):
         filtered_books = Books.objects.filter(author=author_id)
-       
-        return Response(BookSerializer(filtered_books ,many = True).data, status=status.HTTP_200_OK)
-    
+
+        # Применяем пагинацию
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(filtered_books, request)
+        
+        if page is not None:
+            serializer = BookSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)  # Возвращаем данные с пагинацией
+
+        serializer = BookSerializer(filtered_books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class GetBooksByGenresView(views.APIView):
     pagination_class = BooksPagination

@@ -26,10 +26,14 @@ SECRET_KEY = 'django-insecure-off9f3f(m=9j_*r0u&ydt7gp$hl9xe3k7a^a2!mti)5kdql(6d
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
-
 AUTH_USER_MODEL = 'libreApi.CustomUser'
 
+ALLOWED_HOSTS = [
+    "localhost",         # Если ваш сервер работает на этом адресе
+    "10.0.2.2",         # Для доступа с эмулятора Android (используйте этот IP)
+    "127.0.0.1",        # Локальный адрес
+    "192.168.0.111"
+]
 
 # Application definition
 
@@ -42,11 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'libreApi.apps.LibreapiConfig',
     'rest_framework',
+    'corsheaders',
     'rest_framework.authtoken',
     'djoser',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +63,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'MyApi.urls'
+
+
+
 
 TEMPLATES = [
     {
@@ -83,8 +92,8 @@ REST_FRAMEWORK = {
     ],
     
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        #'rest_framework.permissions.AllowAny',
+        #'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -93,8 +102,7 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.SessionAuthentication',
     ],
      
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 50,  
+    'DEFAULT_PAGINATION_CLASS': None,
 }
 
 WSGI_APPLICATION = 'MyApi.wsgi.application'

@@ -45,9 +45,9 @@ class UpdateInfoView(generics.UpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
-        # Проверка на наличие нового изображения в запросе
+       # Проверка на наличие нового изображения в запросе
         new_profile_photo = request.FILES.get('profile_photo', None)
-           
+
         if new_profile_photo:
             file_type = new_profile_photo.content_type
             allowed_formats = {
@@ -55,18 +55,20 @@ class UpdateInfoView(generics.UpdateAPIView):
                 'image/png': 'png',
                 'image/webp': 'webp',
             }    
-        
-        if file_type in allowed_formats:
-            # Сохранение нового изображения
-            file_path = default_storage.save(f'profile_photos/{instance.username + '-' + 'prphoto.' + allowed_formats[file_type]}', new_profile_photo)
-            instance.profile_photo_path = file_path  # Сохраняем новый путь в базе данных
-            if old_profile_photo_path and os.path.exists(old_profile_photo_path):
-                os.remove(old_profile_photo_path)  # Удаляем старую картинку, если она существует
 
-            self.perform_update(serializer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": "Неподдерживаемый формат файла."}, status=status.HTTP_400_BAD_REQUEST)
+            if file_type in allowed_formats:
+                # Сохранение нового изображения
+                file_path = default_storage.save(f'profile_photos/{instance.username + "-" + "prphoto." + allowed_formats[file_type]}', new_profile_photo)
+                instance.profile_photo_path = file_path  # Сохраняем новый путь в базе данных
+                if old_profile_photo_path and os.path.exists(old_profile_photo_path):
+                    os.remove(old_profile_photo_path)  # Удаляем старую картинку, если она существует
+            else:
+                return Response({"detail": "Неподдерживаемый формат файла."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Если новое изображение не загружено, просто продолжаем с обновлением
+        self.perform_update(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
         
         
 class GetUserView(generics.RetrieveAPIView):
@@ -90,7 +92,16 @@ class GetUserView(generics.RetrieveAPIView):
         return Response(user_data, status=status.HTTP_200_OK)
 
 
+class GetMyProfileView(generics.RetrieveAPIView):
+    serializer_class = GetUserInfoSerializer
+
+    def get_object(self):
+
+        return self.request.user
+    
+        
 class GetUserPhotoView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
     def get(self, request, user_id):
         user = CustomUser.objects.get(id=user_id)
         if user.profile_photo_path:
